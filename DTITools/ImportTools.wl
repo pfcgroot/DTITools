@@ -290,7 +290,7 @@ ReadDicom[fol_String,part_Integer:0,OptionsPattern[]]:=Module[{folder},
 
 (* Input is "folder" and {"file1","file2",...}, patitioning default 0 *)
 ReadDicom[folder_String,files:{_?StringQ..},part_Integer:0,OptionsPattern[]]:=
-iReadDicom[If[StringTake[folder,-2]=="\\",folder,folder<>"\\"]<>#&/@files,part,OptionValue[ScaleCorrect]]
+iReadDicom[If[StringTake[folder,-2]==$PathnameSeparator,folder,folder<>$PathnameSeparator]<>#&/@files,part,OptionValue[ScaleCorrect]]
 
 (* Input is {"file1","file2",...}, patitioning default 0 *)
 ReadDicom[files:{_?StringQ..},part_Integer:0,OptionsPattern[]]:=
@@ -446,7 +446,7 @@ Module[{meta, slice, directions, groups, sliceSpacing, pixelSpacing,
 SyntaxInformation[ImportDTI] = {"ArgumentsPattern" -> {_,_.}};
 
 ImportDTI[folder_String,add_String:""]:=Module[{},
-DatRead[folder<>"\\"<>#<>If[add=="","","-"<>add]<>".dat"]&/@{"xx","yy","zz","xy","xz","yz"}];
+DatRead[folder<>$PathnameSeparator<>#<>If[add=="","","-"<>add]<>".dat"]&/@{"xx","yy","zz","xy","xz","yz"}];
 
 ImportDTI[files:{_?StringQ..}]:=Module[{filesc},
 filesc=If[StringLength[#]<4,#<>".dat",If[StringTake[#,-4]==".dat",#,#<>".dat"]]&/@files;

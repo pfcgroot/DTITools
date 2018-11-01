@@ -182,10 +182,16 @@ DcmToNii[{infol_?StringQ,outfol_?StringQ},OptionsPattern[]] := Module[{filfolin,
 	If[filfolin==Null||folout==Null,Return[]];
 	
 	(*create the cmd window command to run dcm2niix.exe*)
-	log=" > \"" <> folout <> "\\output.txt";
 	compress=If[OptionValue[CompressNii],"i","n"];
-	command=First@FileNameSplit[dcm2nii]<>"\ncd " <> dcm2nii <>"\ndcm2niix.exe  -f %f_%s_%t_%i_%m_%n_%p_%q -z "<>compress<>" -o \""<>folout<>"\" \"" <> filfolin <> "\"" <> log<>"\"\nexit\n";
-	
+	log=" > \"" <> folout <> $PathnameSeparator <> "output.txt";
+	Switch[$OperatingSystem,
+		"Windows",
+		command=First@FileNameSplit[dcm2nii]<>"\ncd " <> dcm2nii <>"\ndcm2niix.exe  -f %f_%s_%t_%i_%m_%n_%p_%q -z "<>compress<>" -o \""<>folout<>"\" \"" <> filfolin <> "\"" <> log<>"\"\nexit\n";
+		,
+		"Unix",
+		command=dcm2nii <>" -f %f_%s_%t_%i_%m_%n_%p_%q -z "<>compress<>" -o \""<>folout<>"\" \"" <> filfolin <> "\"" <> log<>"\"\nexit\n";
+	];
+		
 	If[OptionValue[Method]=!=Automatic,Print[command]];
 	
 	(*perform teh conversion*)
@@ -196,8 +202,15 @@ DcmToNii[{infol_?StringQ,outfol_?StringQ},OptionsPattern[]] := Module[{filfolin,
 
 
 FindDcm2Nii[]:=Module[{fil1,fil2},
-	fil1=$UserBaseDirectory <>"\\Applications\\DTITools\\Applications\\dcm2niix.exe";
-	fil2=$BaseDirectory <>"\\Applications\\DTITools\\Applications\\dcm2niix.exe";
+	Switch[$OperatingSystem,
+		"Windows",
+			fil1=$UserBaseDirectory <>"\\Applications\\DTITools\\Applications\\dcm2niix.exe";
+			fil2=$BaseDirectory <>"\\Applications\\DTITools\\Applications\\dcm2niix.exe";
+		,
+		"Unix",
+			fil1=$UserBaseDirectory <>"/Applications/DTITools/Applications/linux-x86_64/bin/dcm2niix";
+			fil2=$BaseDirectory <>"/Applications/DTITools/Applications/linux-x86_64/bin/dcm2niix";
+	];
 	If[FileExistsQ[fil1],DirectoryName[fil1],If[FileExistsQ[fil2],DirectoryName[fil2], Message[DcmToNii::notfount];$Failed]]
 ]
 
@@ -1253,13 +1266,17 @@ OpenMRIcron[filei_, OptionsPattern[]] :=
 
 
 FindMRIcron[] := Module[{mricron},
-  mricron = $UserBaseDirectory <> 
-    "\\Applications\\DTITools\\Applications\\mricron.exe";
-  mricron = 
-   If[! FileExistsQ[mricron], $BaseDirectory <> 
-     "\\Applications\\DTITools\\Applications\\mricron.exe", mricron];
-  If[! FileExistsQ[mricron], Return[Message[OpenMRIcron::notfount]], 
-   mricron]
+	Switch[$OperatingSystem,
+		"Windows",
+			mricron = $UserBaseDirectory <> "\\Applications\\DTITools\\Applications\\mricron.exe";
+  			mricron = If[! FileExistsQ[mricron], $BaseDirectory <> "\\Applications\\DTITools\\Applications\\mricron.exe", mricron];
+
+		,
+		"Unix",
+			mricron = $UserBaseDirectory <> "/Applications/DTITools/Applications/linux-x86_64/bin/mricron";
+			mricron = If[! FileExistsQ[mricron], $BaseDirectory <> "/Applications/DTITools/Applications/linux-x86_64/bin/mricron", mricron];
+	];
+	If[! FileExistsQ[mricron], Return[Message[OpenMRIcron::notfount]], mricron]
   ]
 
 
