@@ -208,8 +208,8 @@ FindDcm2Nii[]:=Module[{fil1,fil2},
 			fil2=$BaseDirectory <>"\\Applications\\DTITools\\Applications\\dcm2niix.exe";
 		,
 		"Unix",
-			fil1=$UserBaseDirectory <>"/Applications/DTITools/Applications/linux-x86_64/bin/dcm2niix";
-			fil2=$BaseDirectory <>"/Applications/DTITools/Applications/linux-x86_64/bin/dcm2niix";
+			fil1=$UserBaseDirectory <>"/Applications/DTITools/Applications/Linux-x86-64/bin/dcm2niix";
+			fil2=$BaseDirectory <>"/Applications/DTITools/Applications/Linux-x86-64/bin/dcm2niix";
 	];
 	If[FileExistsQ[fil1],DirectoryName[fil1],If[FileExistsQ[fil2],DirectoryName[fil2], Message[DcmToNii::notfount];$Failed]]
 ]
